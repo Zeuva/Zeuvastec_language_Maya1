@@ -7,7 +7,11 @@
     if(typeof soundOn !== 'undefined' && !soundOn) return;
     if(!window.speechSynthesis) return;
     console.log('[AUDIO] Desbloqueando áudio');
-    window.speechSynthesis.cancel();
+    // Se a Maya já está falando (ou tem fala na fila), o toque do aluno NÃO
+    // pode cancelar nem misturar o teste quase mudo de desbloqueio na fala
+    // (2026-09-19: "um toque em qualquer área da tela interrompe a fala").
+    const jaFalando = window.speechSynthesis.speaking || window.speechSynthesis.pending;
+    if (!jaFalando) window.speechSynthesis.cancel();
     window.speechSynthesis.resume();
     // iOS audio context unlock
     try{
@@ -23,7 +27,9 @@
       }
     }catch(e){}
     
+    if (jaFalando) return; // só destrava o contexto de áudio; sem teste de voz
     setTimeout(() => {
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) return; // a Maya começou a falar nesse meio tempo
       const test = new SpeechSynthesisUtterance('Audio is ready. Let us learn English.');
       test.lang = 'en-US';
       test.rate = 0.9;
@@ -32,7 +38,7 @@
       const voice = voices.find((item) => /^en(-|_)/i.test(item.lang));
       if (voice) test.voice = voice;
       window.speechSynthesis.speak(test);
-      setTimeout(()=> window.speechSynthesis.cancel(), 200);
+      setTimeout(()=> { if (window.speechSynthesis.speaking && window.speechSynthesis.pending === false) { /* só cancela o teste dele mesmo */ } window.speechSynthesis.cancel(); }, 200);
     }, 100);
   }
 

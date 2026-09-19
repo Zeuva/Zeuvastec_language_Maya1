@@ -8,8 +8,12 @@
   speech.addEventListener?.('voiceschanged', refresh);
   window.addEventListener('pageshow', () => { refresh(); speech.resume(); });
 
+  // Antes, "unlock" chamava speech.cancel() a CADA toque na tela — qualquer
+  // toque acidental do aluno interrompia a fala da Maya (2026-09-19). Agora o
+  // toque só "acorda" o sintetizador (resume); o cancel() continua apenas
+  // dentro de say(), antes de começar uma fala nova.
   function unlock() {
-    try { speech.cancel(); speech.resume(); } catch (_) {}
+    try { speech.resume(); } catch (_) {}
   }
   document.addEventListener('pointerdown', unlock, { passive: true, capture: true });
   document.addEventListener('touchstart', unlock, { passive: true, capture: true });

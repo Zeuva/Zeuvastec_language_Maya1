@@ -271,15 +271,24 @@ async function darBoasVindas(nome){
     const btn=document.getElementById('maya-intro-replay');
     if(btn) btn.onclick=()=>{ try{ speechSynthesis.cancel(); }catch(e){} setTimeout(falarIntro,700); };
   }
-  if(window.__mayaAguardarPronta){ await Promise.race([window.__mayaAguardarPronta(), new Promise(r=>setTimeout(r,6000))]); }
-  // Espera um pouco mais: o clique que dispara as boas-vindas é o mesmo
-  // clique que o audio-unlock.js usa pra "destravar" o áudio no celular
-  // (um teste quase mudo, cancelado logo em seguida).
-  await new Promise(r=>setTimeout(r,600));
-  if(!homeVisivel()) return;
-  if(navigator.userActivation && navigator.userActivation.hasBeenActive){ falarIntro(); return; }
+  // 1) a Maya aparece primeiro (espera o avatar 3D terminar de carregar — no
+  // celular o GLB demora; se ele falhar, a promessa resolve e vale a foto);
+  // 2) 2 segundos depois a apresentação começa SOZINHA, sem apertar nada.
+  if(window.__mayaAguardarPronta){ await Promise.race([window.__mayaAguardarPronta(), new Promise(r=>setTimeout(r,30000))]); }
+  await new Promise(r=>setTimeout(r,2000));
+  if(!homeVisivel()||introCancelada) return;
+  let comecou=false; const aoComecar=()=>{ comecou=true; };
+  window.addEventListener('maya-speech-started',aoComecar);
+  falarIntro();
+  await new Promise(r=>setTimeout(r,3500));
+  window.removeEventListener('maya-speech-started',aoComecar);
+  if(comecou||!homeVisivel()||introCancelada) return;
+  // O navegador bloqueou a fala automática (regra do iPhone/Safari e do
+  // Chrome: som só depois de um toque do usuário). Então o PRIMEIRO toque em
+  // qualquer lugar da tela já dispara a apresentação; o botão é só um aviso.
+  introJaFalou=false;
   const hint=document.getElementById('maya-intro-hint');
-  const parar=()=>{ document.removeEventListener('pointerdown',esperar,true); document.removeEventListener('keydown',esperar,true); if(hint) hint.hidden=true; };
+  const parar=()=>{ document.removeEventListener('pointerdown',esperar,true); document.removeEventListener('keydown',esperar,true); window.removeEventListener('maya-speech-started',parar); if(hint) hint.hidden=true; };
   function esperar(e){
     const alvo=e.target&&e.target.closest?e.target:null;
     // toque no próprio botão de ouvir: deixa o clique dele cuidar disso
@@ -290,6 +299,7 @@ async function darBoasVindas(nome){
     setTimeout(falarIntro,700);
   }
   if(hint){ hint.hidden=false; hint.onclick=()=>{ parar(); setTimeout(falarIntro,700); }; }
+  window.addEventListener('maya-speech-started',parar);
   document.addEventListener('pointerdown',esperar,true); document.addEventListener('keydown',esperar,true);
 }
 if(saved) darBoasVindas(saved);

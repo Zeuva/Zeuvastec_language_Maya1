@@ -30,8 +30,22 @@ function anexarEventosDeFala(u){
   // fechar a boca de uma fala nova (ver maya-3d.js). O início leva o texto,
   // o idioma e a velocidade pra o avatar montar a linha do tempo labial.
   const id=++contadorFalas;
-  window.dispatchEvent(new CustomEvent('maya-speaking-start',{detail:{id, text:u.text||'', lang:u.lang||'', rate:u.rate||1}}));
+  // O "start" (que liga a boca) só dispara quando a fala DE FATO começa
+  // (onstart). Antes disparava ao criar a fala: quando o navegador bloqueava
+  // o som (sem toque prévio do aluno, comum no iPhone), a Maya mexia a boca
+  // sem sair som. Alguns navegadores não mandam onstart; nesse caso, se
+  // depois de 1,2s o sintetizador está falando, iniciamos mesmo assim.
+  let jaIniciou=false;
+  function iniciar(){
+    if(jaIniciou) return;
+    jaIniciou=true;
+    window.dispatchEvent(new CustomEvent('maya-speaking-start',{detail:{id, text:u.text||'', lang:u.lang||'', rate:u.rate||1}}));
+    window.dispatchEvent(new CustomEvent('maya-speech-started'));
+  }
+  u.onstart=iniciar;
+  setTimeout(()=>{ if(!jaIniciou && speechSynthesis.speaking) iniciar(); },1200);
   u.onboundary=(ev)=>{
+    iniciar();
     // charIndex = onde a palavra começa no texto; o avatar ressincroniza a
     // boca nessa palavra e aprende o ritmo real da voz.
     window.dispatchEvent(new CustomEvent('maya-speaking-boundary',{detail:{charIndex: typeof ev?.charIndex==='number' ? ev.charIndex : null}}));
