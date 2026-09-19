@@ -6,9 +6,15 @@
 // Chrome, macOS/iOS) para NUNCA escolher uma delas quando existir alguma
 // alternativa feminina disponível no navegador (2026-09-17).
 const NOMES_VOZ_MASCULINA=['david','guy','daniel','alex','mark','george','ryan','fred','tom','oliver','arthur','eric','thiago','antonio','felipe','ricardo','daniel'];
+// Vozes "online" (Google, Microsoft Online/Natural do Edge) IGNORAM o volume
+// da fala no Chrome/Edge — o som saía sempre no volume máximo mesmo com o
+// controle da Maya abaixado (2026-09-19). Vozes locais do sistema obedecem,
+// então elas passam na frente; Google deixa de ganhar bônus.
+function ehVozOnline(v){ return v.localService===false || (v.localService===undefined && /online|google/i.test(v.name||'')); }
+function pontosVozLocal(v){ return ehVozOnline(v) ? -30 : 20; }
 function pareceVozMasculina(v){ const n=(v.name||'').toLowerCase(); return NOMES_VOZ_MASCULINA.some(m=>n.includes(m)); }
 let voiceCacheFix={en:[],pt:[]}; let vReady=false;
-function refreshVFix(){ try{ const all=speechSynthesis.getVoices(); if(!all.length) return; vReady=true; voiceCacheFix.en=all.filter(v=>v.lang.toLowerCase().startsWith('en')); voiceCacheFix.pt=all.filter(v=>v.lang.toLowerCase().startsWith('pt')); voiceCacheFix.en.sort((a,b)=>{ const aS=(a.lang==='en-US'?10:0)+(a.name.includes('Google')?5:0)+(pareceVozMasculina(a)?-100:0); const bS=(b.lang==='en-US'?10:0)+(b.name.includes('Google')?5:0)+(pareceVozMasculina(b)?-100:0); return bS-aS; }); voiceCacheFix.pt.sort((a,b)=>{ const aS=(a.lang==='pt-BR'?10:0)+(a.name.includes('Google')?5:0)+(pareceVozMasculina(a)?-100:0); const bS=(b.lang==='pt-BR'?10:0)+(b.name.includes('Google')?5:0)+(pareceVozMasculina(b)?-100:0); return bS-aS; }); }catch(e){} }
+function refreshVFix(){ try{ const all=speechSynthesis.getVoices(); if(!all.length) return; vReady=true; voiceCacheFix.en=all.filter(v=>v.lang.toLowerCase().startsWith('en')); voiceCacheFix.pt=all.filter(v=>v.lang.toLowerCase().startsWith('pt')); voiceCacheFix.en.sort((a,b)=>{ const aS=(a.lang==='en-US'?10:0)+pontosVozLocal(a)+(pareceVozMasculina(a)?-100:0); const bS=(b.lang==='en-US'?10:0)+pontosVozLocal(b)+(pareceVozMasculina(b)?-100:0); return bS-aS; }); voiceCacheFix.pt.sort((a,b)=>{ const aS=(a.lang==='pt-BR'?10:0)+pontosVozLocal(a)+(pareceVozMasculina(a)?-100:0); const bS=(b.lang==='pt-BR'?10:0)+pontosVozLocal(b)+(pareceVozMasculina(b)?-100:0); return bS-aS; }); }catch(e){} }
 refreshVFix(); if(speechSynthesis.onvoiceschanged!==undefined){ speechSynthesis.onvoiceschanged=refreshVFix; setTimeout(refreshVFix,500); setTimeout(refreshVFix,1500); }
 function getENFix(){ if(!vReady) refreshVFix(); return voiceCacheFix.en.find(v=>v.lang==='en-US')||voiceCacheFix.en[0]||null; }
 function getPTFix(){ if(!vReady) refreshVFix(); return voiceCacheFix.pt.find(v=>v.lang==='pt-BR')||voiceCacheFix.pt[0]||null; }
@@ -17,6 +23,7 @@ function getPTFix(){ if(!vReady) refreshVFix(); return voiceCacheFix.pt.find(v=>
 // evento "boundary" da própria fala marca cada palavra em tempo real —
 // usamos isso para alternar formatos de boca (visemas) no avatar 3D via
 // eventos globais, que o maya-3d.js escuta (sem acoplar os dois arquivos).
+function avisarVozOnline(v){ const n=document.getElementById('maya-volume-nota'); if(n) n.hidden=!(v && ehVozOnline(v)); }
 let contadorFalas=0;
 function anexarEventosDeFala(u){
   // Cada fala tem um id: o fim de uma fala antiga (cancelada) não pode
@@ -49,8 +56,8 @@ function anexarEventosDeFala(u){
   const onerrorOriginal=u.onerror;
   u.onerror=(...args)=>{ terminar(); if(onerrorOriginal) onerrorOriginal(...args); };
 }
-function speakENFix(t,r=0.9,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=r; u.volume=window.mayaVolume; const v=getENFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
-function speakPTFix(t,r=1,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; const isPureEN=/^[A-Za-z0-9 .,!?'"-]+$/.test(t) && !/[áàâãéêíóôõúç]/.test(t) && /\b(hello|my name|I am|would like|coffee|please|thank you|good morning|how are you|welcome to the café|what would you like)\b/i.test(t); if(isPureEN){ speakENFix(t,r,o); return; } speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=r; u.volume=window.mayaVolume; const v=getPTFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
+function speakENFix(t,r=0.9,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=r; u.volume=window.mayaVolume; const v=getENFix(); if(v) u.voice=v; avisarVozOnline(v); if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
+function speakPTFix(t,r=1,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; const isPureEN=/^[A-Za-z0-9 .,!?'"-]+$/.test(t) && !/[áàâãéêíóôõúç]/.test(t) && /\b(hello|my name|I am|would like|coffee|please|thank you|good morning|how are you|welcome to the café|what would you like)\b/i.test(t); if(isPureEN){ speakENFix(t,r,o); return; } speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=r; u.volume=window.mayaVolume; const v=getPTFix(); if(v) u.voice=v; avisarVozOnline(v); if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
 window.speakEnglish=speakENFix; window.speakPortuguese=speakPTFix; window.speakBilingual=(en,pt)=>{ speakENFix(en,0.9,()=>{ setTimeout(()=> speakPTFix(pt,1.0),600); }); }; function speakSlowFix(t){ speakENFix(t,0.55); } window.speakSlow=speakSlowFix;
 
 // Volume da Maya (2026-09-19: "não dá pra controlar o volume, fala na altura

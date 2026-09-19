@@ -250,3 +250,7 @@
   color:#9a4f28;
   text-align:center;
 }
+
+.maya-volume{flex-wrap:wrap;justify-content:flex-end;max-width:min(320px,calc(100vw - 24px))}
+.maya-volume small{flex-basis:100%;font-size:10px;line-height:1.25;color:#9a4f28;text-align:right}
+.maya-volume small[hidden]{display:none}
