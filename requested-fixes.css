@@ -1,0 +1,152 @@
+/* AJUSTES SOLICITADOS — preserva a paleta e o design existente. */
+
+/* Ícones da navegação: todos no mesmo estilo de traço do ícone Início. */
+.nav-icon{
+  display:inline-grid !important;
+  place-items:center !important;
+  width:29px !important;
+  height:20px !important;
+  vertical-align:middle !important;
+}
+.nav-icon svg{
+  width:20px !important;
+  height:20px !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:1.8 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+@media(max-width:800px){
+  .nav-icon{width:auto !important;height:22px !important;}
+  .nav-icon svg{width:22px !important;height:22px !important;}
+}
+
+/* Corrige o catálogo: o container externo não pode virar uma segunda grade. */
+#lesson-catalog{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#lesson-catalog > .lesson-catalog{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:17px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#lesson-catalog .catalog-card{
+  min-width:0 !important;
+}
+#lesson-catalog .catalog-card > div{
+  min-width:0 !important;
+}
+#lesson-catalog .catalog-card h2,
+#lesson-catalog .catalog-card p,
+#lesson-catalog .catalog-card small{
+  overflow-wrap:anywhere;
+}
+
+/* Em telas pequenas, uma coluna continua legível. */
+@media(max-width:900px){
+  #lesson-catalog > .lesson-catalog{grid-template-columns:1fr !important;}
+}
+
+/* Landscape em celular/tablet: não altera a identidade visual; apenas dá
+   espaço real ao conteúdo e evita cartões espremidos. */
+@media (orientation:landscape) and (max-height:600px){
+  .content{
+    padding-top:28px !important;
+    padding-bottom:40px !important;
+  }
+  #learn-view .lesson-catalog{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  #learn-view .catalog-card{
+    padding:18px !important;
+  }
+}
+
+/* O fundo do Hero acompanha todo o conteúdo textual. */
+.hero{
+  height:auto !important;
+  min-height:275px !important;
+  align-items:stretch !important;
+}
+.hero-copy{
+  min-width:0 !important;
+  height:auto !important;
+}
+.hero-copy > p:not(.eyebrow){
+  overflow-wrap:anywhere !important;
+}
+.hero .primary{
+  max-width:100% !important;
+  white-space:normal !important;
+}
+.hero-art{
+  min-height:275px;
+}
+@media(max-width:560px){
+  .hero-copy{
+    padding-bottom:155px !important;
+  }
+  .hero-art{
+    min-height:130px !important;
+  }
+}
+
+
+/* Navegação lateral: permanece com o mesmo visual, mas ganha rolagem
+   quando a altura disponível é pequena, especialmente no landscape. */
+.sidebar{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  max-height:100vh !important;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+.sidebar > nav{
+  flex:0 0 auto;
+}
+@media (orientation:landscape) and (max-height:600px){
+  .sidebar{
+    height:100vh !important;
+    overflow-y:auto !important;
+    padding-top:16px !important;
+    padding-bottom:16px !important;
+  }
+}
+
+/* Todos os cards de vocabulário usam o mesmo padrão visual e
+   mantêm os dois botões de áudio acessíveis. */
+.vocab-item-head{
+  min-width:0 !important;
+}
+.vocab-text{
+  min-width:0 !important;
+}
+.vocab-audio-buttons{
+  flex:0 0 auto !important;
+  align-items:stretch !important;
+}
+.vocab-audio-btn{
+  min-width:48px !important;
+  min-height:30px !important;
+  padding:6px 8px !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+  white-space:nowrap !important;
+}
+.vocab-audio-btn:active{
+  transform:translateY(1px);
+}
+@media(max-width:520px){
+  .vocab-item-head{
+    align-items:flex-start !important;
+  }
+  .vocab-audio-btn{
+    min-width:46px !important;
+    font-size:9px !important;
+  }
+}

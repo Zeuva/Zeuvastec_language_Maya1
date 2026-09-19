@@ -1,0 +1,214 @@
+/* Maya — avatar único do app (2026-09-17) */
+.maya-welcome{
+  width:88px;
+  height:88px;
+  object-fit:cover;
+  object-position:top center;
+  border-radius:50%;
+  border:3px solid #276246;
+  box-shadow:0 6px 18px rgba(39,98,70,0.25);
+  flex-shrink:0;
+  margin-right:16px;
+}
+#home-view header{align-items:center}
+
+/* A Maya 3D existe só uma vez e é movida (appendChild) entre o encaixe do
+   Início e o encaixe de Conversar (ver maya-3d.js, 2026-09-19) — cada
+   encaixe só cuida do tamanho/posição, o .maya-avatar-big cuida do resto. */
+.maya-avatar-slot-home{
+  flex-shrink:0;
+  margin-right:0;
+}
+/* Maya bem maior no Início (pedido do usuário 2026-09-20: "aumentar a
+   Maya na tela inicial") — sai de 96px para um retrato de apresentação. */
+.maya-avatar-big.maya-avatar-big-home{
+  width:280px;
+  height:auto;
+  aspect-ratio:1/1;
+  max-width:100%;
+  border-width:6px;
+}
+#home-view header{
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:16px 24px;
+}
+#home-view header>div:not(.maya-avatar-slot){
+  flex:1 1 240px;
+  min-width:0;
+}
+#home-view header .sound{
+  position:absolute;
+  top:0;
+  right:0;
+}
+@media (max-width:640px){
+  .maya-avatar-slot-home{width:100%;display:flex;justify-content:center;min-width:0}
+  .maya-avatar-big.maya-avatar-big-home{width:min(290px,100%);height:auto;aspect-ratio:1/1}
+  #home-view header{justify-content:center;text-align:center}
+}
+
+/* Balão de apresentação da Maya no Início */
+.maya-intro{
+  background:#fff;
+  border:1px solid #e9e5da;
+  border-radius:18px;
+  padding:16px 20px;
+  margin:0 0 26px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
+.maya-intro[hidden]{display:none}
+.maya-intro-hint{
+  display:block;
+  width:100%;
+  margin:0 0 12px;
+  font:700 15px 'DM Sans',sans-serif;
+  color:#163a28;
+  background:#d9f36a;
+  border:0;
+  border-radius:12px;
+  padding:14px 16px;
+  cursor:pointer;
+  animation:maya-hint-pulse 1.6s ease-in-out infinite;
+}
+@keyframes maya-hint-pulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(217,243,106,.7); }
+  50%{ box-shadow:0 0 0 10px rgba(217,243,106,0); }
+}
+.maya-intro-hint[hidden]{display:none}
+.maya-intro-en{
+  font-family:'Fraunces',serif;
+  font-size:17px;
+  font-weight:600;
+  color:#1f2a24;
+  margin:0 0 8px;
+  line-height:1.4;
+}
+.maya-intro-pt{
+  font-size:14px;
+  color:#5c6b62;
+  margin:0 0 12px;
+  line-height:1.45;
+}
+.maya-intro-btn{
+  border:0;
+  border-radius:999px;
+  background:#276246;
+  color:#fff;
+  font:600 14px 'DM Sans',sans-serif;
+  padding:9px 18px;
+  cursor:pointer;
+}
+
+/* A Maya é a tutora — fica grande e em destaque no topo de "Conversar",
+   com as frases (inglês/português) logo abaixo dela, não escondida como
+   um simples ícone ao lado do título (pedido do usuário, 2026-09-17). */
+.maya-stage{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:18px 16px 8px;
+}
+.maya-avatar-big{
+  position:relative;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  border:5px solid #276246;
+  box-shadow:0 10px 30px rgba(39,98,70,0.3);
+  transition:box-shadow 0.25s, transform 0.25s;
+  overflow:hidden;
+  background:#e9e5da;
+}
+.maya-3d-avatar{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.maya-3d-avatar canvas{
+  width:100% !important;
+  height:100% !important;
+  display:block;
+}
+.maya-avatar-fallback{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top center;
+  transition:opacity 0.4s;
+}
+.maya-avatar-big.maya-3d-ready .maya-avatar-fallback{
+  opacity:0;
+  pointer-events:none;
+}
+/* Aro pulsante enquanto a Maya está falando, para não parecer uma imagem
+   parada — ligado/desligado pelo guided-voice.js junto com a fala. */
+.maya-avatar-big.speaking{
+  animation:maya-speaking-pulse 1s ease-in-out infinite;
+  border-color:#d9f36a;
+}
+@keyframes maya-speaking-pulse{
+  0%{ box-shadow:0 10px 30px rgba(39,98,70,0.3), 0 0 0 0 rgba(217,243,106,0.55); }
+  70%{ box-shadow:0 10px 30px rgba(39,98,70,0.3), 0 0 0 18px rgba(217,243,106,0); }
+  100%{ box-shadow:0 10px 30px rgba(39,98,70,0.3), 0 0 0 0 rgba(217,243,106,0); }
+}
+.maya-speech{
+  margin-top:14px;
+  max-width:520px;
+  background:#fff;
+  border:1px solid #e9e5da;
+  border-radius:16px;
+  padding:14px 20px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
+.maya-speech-en{
+  font-family:'Fraunces',serif;
+  font-size:16px;
+  font-weight:600;
+  color:#1f2a24;
+  margin:0 0 6px;
+  line-height:1.35;
+}
+.maya-speech-pt{
+  font-size:14px;
+  color:#5c6b62;
+  margin:0;
+}
+.maya-speech-pt:empty{display:none}
+#talk-view header{justify-content:center;text-align:center}
+#talk-view header>div{max-width:520px}
+
+/* A "Dica" foi movida para baixo da Maya, junto com a frase que ela está
+   falando (pedido do usuário, 2026-09-17). */
+.maya-stage .voice-tip{
+  margin-top:10px;
+  max-width:520px;
+  width:100%;
+  border-top:0;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  border-radius:14px;
+  text-align:left;
+}
+
+.message.tutor .speaker{
+  overflow:hidden;
+  padding:0;
+  background:#276246;
+}
+.message.tutor .speaker img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top center;
+  border-radius:50%;
+}
+
+/* O botão de microfone fica oculto (pedido do usuário) — a escuta liga
+   sozinha ao entrar em "Conversar" (ver guided-voice.js). A lógica de
+   reconhecimento de voz continua igual, só a interface muda. */
+#mic-button.hidden{display:none !important}

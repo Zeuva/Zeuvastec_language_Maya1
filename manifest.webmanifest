@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Zeuvastec Language - Ingles todos os dias",
+  "short_name": "Zeuvastec",
+  "description": "Aprenda inglês todos os dias: 1000 lições, quiz sem repetição, simulados e prova de fluência, e conversação guiada por voz do básico ao avançado.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffdf8",
+  "theme_color": "#276246",
+  "orientation": "any",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
