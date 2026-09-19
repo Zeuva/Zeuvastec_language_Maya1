@@ -142,9 +142,10 @@
     <div class="modal hidden" id="certificate-modal" role="dialog" style="z-index:10001"><div class="modal-box" style="max-width:800px;width:95%;text-align:center"><button class="close" onclick="document.getElementById('certificate-modal').classList.add('hidden')">×</button><h2>📜 Seu Certificado Zeuvastec</h2><img id="certificate-image" style="width:100%;border-radius:12px;margin:16px 0"/><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button id="download-certificate" class="primary">⬇️ Baixar PNG</button><button class="tab" onclick="document.getElementById('certificate-modal').classList.add('hidden')">Fechar</button></div></div></div>
 
   </main>
-  <script src="app.js?v=7"></script>
+  <div class="maya-volume" id="maya-volume-box"><button type="button" id="maya-volume-icon" aria-label="Silenciar ou ativar a voz da Maya">🔊</button><input id="maya-volume" type="range" min="0" max="100" step="5" value="60" aria-label="Volume da Maya"></div>
+  <script src="app.js?v=8"></script>
   <script src="interaction-fix.js"></script>
-  <script src="guided-voice.js?v=6"></script>
+  <script src="guided-voice.js?v=8"></script>
   <script src="pwa.js"></script>
   <script src="profile.js"></script>
   <script src="audio-unlock.js"></script>

@@ -129,6 +129,14 @@ export async function iniciarMaya3D() {
     resolverPronta(true);
   } catch (e) {
     console.warn('[Maya 3D] Não foi possível carregar o avatar 3D, mantendo a foto da Maya:', e);
+    // Em celular não dá pra abrir o console: mostra o motivo embaixo da foto
+    // pra o problema poder ser diagnosticado (2026-09-19).
+    try {
+      const aviso = document.createElement('small');
+      aviso.className = 'maya-3d-erro';
+      aviso.textContent = 'Avatar 3D indisponível neste aparelho (' + String((e && e.message) || e).slice(0, 90) + ')';
+      wrapper.insertAdjacentElement('afterend', aviso);
+    } catch (_) { /* sem aviso */ }
     resolverPronta(false);
   } finally {
     carregando = false;

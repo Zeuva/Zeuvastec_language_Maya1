@@ -212,3 +212,41 @@
    sozinha ao entrar em "Conversar" (ver guided-voice.js). A lógica de
    reconhecimento de voz continua igual, só a interface muda. */
 #mic-button.hidden{display:none !important}
+
+/* Controle de volume da Maya — fixo no canto, visível em todas as telas */
+.maya-volume{
+  position:fixed;
+  right:12px;
+  bottom:12px;
+  z-index:60;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#fff;
+  border:1px solid #e9e5da;
+  border-radius:999px;
+  padding:6px 12px 6px 8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+.maya-volume button{
+  border:0;
+  background:transparent;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  padding:2px;
+}
+.maya-volume input[type=range]{
+  width:110px;
+  accent-color:#276246;
+  margin:0;
+}
+.maya-3d-erro{
+  display:block;
+  margin:8px auto 0;
+  max-width:280px;
+  font-size:11px;
+  line-height:1.3;
+  color:#9a4f28;
+  text-align:center;
+}

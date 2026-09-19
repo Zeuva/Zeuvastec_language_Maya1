@@ -49,9 +49,27 @@ function anexarEventosDeFala(u){
   const onerrorOriginal=u.onerror;
   u.onerror=(...args)=>{ terminar(); if(onerrorOriginal) onerrorOriginal(...args); };
 }
-function speakENFix(t,r=0.9,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=r; const v=getENFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
-function speakPTFix(t,r=1,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; const isPureEN=/^[A-Za-z0-9 .,!?'"-]+$/.test(t) && !/[áàâãéêíóôõúç]/.test(t) && /\b(hello|my name|I am|would like|coffee|please|thank you|good morning|how are you|welcome to the café|what would you like)\b/i.test(t); if(isPureEN){ speakENFix(t,r,o); return; } speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=r; const v=getPTFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
+function speakENFix(t,r=0.9,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=r; u.volume=window.mayaVolume; const v=getENFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
+function speakPTFix(t,r=1,o){ if(!t) return; if(typeof soundOn!=='undefined' && !soundOn) return; const isPureEN=/^[A-Za-z0-9 .,!?'"-]+$/.test(t) && !/[áàâãéêíóôõúç]/.test(t) && /\b(hello|my name|I am|would like|coffee|please|thank you|good morning|how are you|welcome to the café|what would you like)\b/i.test(t); if(isPureEN){ speakENFix(t,r,o); return; } speechSynthesis.cancel(); setTimeout(()=>{ const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=r; u.volume=window.mayaVolume; const v=getPTFix(); if(v) u.voice=v; if(o) u.onend=o; anexarEventosDeFala(u); speechSynthesis.speak(u); },80); }
 window.speakEnglish=speakENFix; window.speakPortuguese=speakPTFix; window.speakBilingual=(en,pt)=>{ speakENFix(en,0.9,()=>{ setTimeout(()=> speakPTFix(pt,1.0),600); }); }; function speakSlowFix(t){ speakENFix(t,0.55); } window.speakSlow=speakSlowFix;
+
+// Volume da Maya (2026-09-19: "não dá pra controlar o volume, fala na altura
+// máxima"). A Web Speech API aceita volume 0..1 por fala; guardamos a escolha
+// do aluno no aparelho e usamos em toda fala (padrão 60%, não 100%).
+const CHAVE_VOLUME='zeuvastec-volume';
+window.mayaVolume=(function(){ const v=parseFloat(localStorage.getItem(CHAVE_VOLUME)); return isFinite(v)?Math.min(1,Math.max(0,v)):0.6; })();
+(function(){
+  const slider=document.getElementById('maya-volume'), icone=document.getElementById('maya-volume-icon');
+  if(!slider) return;
+  let volumeAntesDeMudo=window.mayaVolume||0.6;
+  function atualizarIcone(){ if(icone) icone.textContent=window.mayaVolume===0?'🔇':(window.mayaVolume<0.5?'🔉':'🔊'); }
+  function aplicar(v,salvar){ window.mayaVolume=Math.min(1,Math.max(0,v)); slider.value=String(Math.round(window.mayaVolume*100)); if(salvar){ try{ localStorage.setItem(CHAVE_VOLUME,String(window.mayaVolume)); }catch(e){} } atualizarIcone(); }
+  aplicar(window.mayaVolume,false);
+  slider.addEventListener('input',()=>{ aplicar(slider.value/100,true); if(window.mayaVolume>0) volumeAntesDeMudo=window.mayaVolume; });
+  // ao soltar o controle, a Maya diz uma palavrinha no volume novo pra o aluno ouvir o nível
+  slider.addEventListener('change',()=>{ if(window.mayaVolume>0 && typeof window.speakEnglish==='function') window.speakEnglish('Hello!',1); });
+  if(icone) icone.addEventListener('click',()=>{ if(window.mayaVolume>0){ volumeAntesDeMudo=window.mayaVolume; aplicar(0,true); try{ speechSynthesis.cancel(); }catch(e){} } else { aplicar(volumeAntesDeMudo||0.6,true); } });
+})();
 
 /* Guided speaking exercise: several conversation scenarios per level, checks a spoken answer, corrects it, and moves ahead. */
 (function () {
