@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.zeuvastec_language_corrigido_11.twa",
+        "sha256_cert_fingerprints": ["84:E9:3B:D6:42:B8:74:C1:56:8F:F6:C0:A0:71:06:67:B7:32:ED:D0:3F:0E:E1:02:32:96:D9:A7:48:CC:B2:C1"]
+      }
+    }]

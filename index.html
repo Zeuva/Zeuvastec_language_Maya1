@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zeuvastec Language — Inglês todos os dias</title>
+  <meta name="theme-color" content="#276246" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Zeuvastec" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="voice.css" />
+  <link rel="stylesheet" href="fix.css" />
+  <link rel="stylesheet" href="levels.css" />
+  <link rel="stylesheet" href="profile.css" />
+  <link rel="stylesheet" href="home-redesign.css" />
+  <link rel="stylesheet" href="flashcard-flip.css" />
+  <link rel="stylesheet" href="hero-illustration.css" />
+  <link rel="stylesheet" href="startup.css" />
+  <link rel="stylesheet" href="requested-fixes.css" />
+  <link rel="stylesheet" href="maya-language.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#home"><span class="brand-mark">Z</span><span>Zeuvastec<br><em>Language</em></span></a>
+      <nav aria-label="Navegação principal">
+        <button class="nav-item active" data-view="home"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/></svg></span>Início</button>
+        <button class="nav-item" data-view="learn"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>Aprender</button>
+        <button class="nav-item" data-view="talk"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2"/></svg></span>Conversar</button>
+        <button class="nav-item" data-view="review"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 8a8 8 0 0 0-14.7-2L4 8"/><path d="M4 4v4h4"/><path d="M4 16a8 8 0 0 0 14.7 2l1.3-2"/><path d="M20 20v-4h-4"/></svg></span>Revisar</button>
+        <button class="nav-item" data-view="exam"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>Simulados</button>
+      <button class="nav-item" data-view="progress"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span>Meu progresso</button>
+      </nav>
+      <div class="daily-card">
+        <p>Meta diária</p>
+        <div class="ring"><span id="daily-progress">0%</span></div>
+        <strong>10 minutos</strong>
+        <small>Continue assim!</small>
+      </div>
+      <button class="profile" id="edit-profile" type="button" aria-label="Alterar nome do aluno"><div class="avatar" id="profile-initials">EU</div><div><strong id="profile-name">Você</strong><span>Nível iniciante · editar</span></div></button>
+    </aside>
+
+    <section class="content" id="home-view">
+      <header>
+        <div class="maya-avatar-slot maya-avatar-slot-home" id="maya-avatar-slot-home">
+          <div class="maya-avatar-big" id="maya-avatar-big">
+            <div id="maya-3d-avatar" class="maya-3d-avatar"></div>
+            <img src="maya.png" alt="Maya, sua tutora de inglês" id="maya-avatar-fallback" class="maya-avatar-fallback">
+          </div>
+        </div>
+        <div><p class="eyebrow" id="current-date">CARREGANDO DATA...</p><h1>Hello, <b id="student-name">amigo</b></h1><p class="subtitle">Eu sou a Maya. Um pouco de inglês todos os dias faz uma grande diferença.</p><p class="brand-signature" style="margin-top:8px;font-size:12px;font-weight:700;color:#276246;letter-spacing:0.08em;text-transform:uppercase;opacity:0.8">Zeuvastec Language</p></div>
+        <button class="sound" id="sound-toggle" aria-label="Alternar sons">♬</button>
+      </header>
+
+      <section class="maya-intro" id="maya-intro" aria-live="polite" hidden>
+        <button type="button" class="maya-intro-hint" id="maya-intro-hint" hidden>▶ Toque aqui para ouvir as boas-vindas da Maya</button>
+        <p class="maya-intro-en" id="maya-intro-en"></p>
+        <p class="maya-intro-pt" id="maya-intro-pt"></p>
+        <button type="button" class="maya-intro-btn" id="maya-intro-replay">🔊 Ouvir a Maya</button>
+      </section>
+
+      <section class="hero">
+        <div class="hero-copy"><p class="eyebrow">LIÇÃO DE HOJE · 8 MIN</p><h2>Conhecendo pessoas</h2><p>Aprenda a cumprimentar, se apresentar e iniciar uma conversa simples em inglês.</p><button class="primary" id="start-lesson">Começar lição <span>→</span></button></div>
+        <div class="hero-art" aria-hidden="true"><svg class="hero-illustration" viewBox="0 0 480 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="heroBgGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--green)"/><stop offset="100%" style="stop-color:#163a28"/></linearGradient><radialGradient id="heroGlow" cx="82%" cy="8%" r="60%"><stop offset="0%" style="stop-color:var(--lime);stop-opacity:0.35"/><stop offset="100%" style="stop-color:var(--lime);stop-opacity:0"/></radialGradient></defs><rect x="0" y="0" width="480" height="400" fill="url(#heroBgGrad)"/><rect x="0" y="0" width="480" height="400" fill="url(#heroGlow)"/><path class="hero-arc" d="M150,150 Q240,90 330,150" fill="none" style="stroke:var(--lime)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1,10" opacity="0.7"/><circle class="hero-spark s1" cx="60" cy="80" r="4" style="fill:var(--lime)" opacity="0.8"/><circle class="hero-spark s2" cx="412" cy="72" r="3" style="fill:var(--cream)" opacity="0.7"/><circle class="hero-spark s3" cx="432" cy="232" r="5" style="fill:var(--lime)" opacity="0.6"/><circle class="hero-spark s4" cx="40" cy="252" r="3" style="fill:var(--cream)" opacity="0.6"/><path class="hero-spark s5" d="M240,58 l4,10 10,4 -10,4 -4,10 -4,-10 -10,-4 10,-4 z" style="fill:var(--cream)" opacity="0.85"/><ellipse cx="140" cy="352" rx="50" ry="10" style="fill:#000" opacity="0.16"/><ellipse cx="345" cy="352" rx="50" ry="10" style="fill:#000" opacity="0.16"/><g class="hero-char c1"><path d="M96,205 q-30,-16 -16,-46" fill="none" style="stroke:var(--orange)" stroke-width="16" stroke-linecap="round"/><rect x="88" y="195" width="78" height="118" rx="36" style="fill:var(--orange)"/><circle cx="127" cy="168" r="44" style="fill:var(--cream)"/><circle cx="112" cy="164" r="4.5" style="fill:var(--ink)"/><circle cx="142" cy="164" r="4.5" style="fill:var(--ink)"/><path d="M112,182 q15,12 30,0" fill="none" style="stroke:var(--ink)" stroke-width="3" stroke-linecap="round"/></g><g class="hero-char c2"><path d="M384,205 q30,-16 16,-46" fill="none" style="stroke:var(--lime)" stroke-width="16" stroke-linecap="round"/><rect x="314" y="195" width="78" height="118" rx="36" style="fill:var(--lime)"/><circle cx="353" cy="168" r="44" style="fill:var(--cream)"/><circle cx="338" cy="164" r="4.5" style="fill:var(--ink)"/><circle cx="368" cy="164" r="4.5" style="fill:var(--ink)"/><path d="M338,182 q15,12 30,0" fill="none" style="stroke:var(--ink)" stroke-width="3" stroke-linecap="round"/></g><g class="hero-bubble b1"><rect x="26" y="28" width="96" height="42" rx="16" style="fill:var(--paper)"/><path d="M50,70 l-10,14 18,-8 z" style="fill:var(--paper)"/><text x="74" y="54" text-anchor="middle" style="fill:var(--green);font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px">Hi! 👋</text></g><g class="hero-bubble b2"><rect x="326" y="16" width="132" height="42" rx="16" style="fill:var(--paper)"/><path d="M408,58 l10,14 -20,-8 z" style="fill:var(--paper)"/><text x="392" y="42" text-anchor="middle" style="fill:var(--green);font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px">Nice to meet you!</text></g></svg></div>
+      </section>
+
+      <section class="section-heading"><div><h2>Sua trilha</h2><p>Do básico à fluência, em 6 módulos</p></div><button class="link-btn" data-view="learn">Ver todas as lições</button></section>
+      <div class="module-grid" id="modules-grid"></div><section class="section-heading"><div><h2>Continue de onde parou</h2><p>Suas próximas lições</p></div><button class="link-btn" data-view="learn">Ver todas as lições</button></section><section class="lesson-grid" id="lesson-grid"></section>
+    </section>
+
+    <section class="content hidden" id="learn-view">
+      <header><div><p class="eyebrow">TRILHA PROFISSIONAL - 55 LIÇÕES</p><h1>Aprender</h1><p class="subtitle">Lições pequenas, prática real.</p></div></header>
+      <div class="lesson-catalog" id="lesson-catalog"></div>
+    </section>
+
+    <section class="content hidden" id="review-view">
+      <header><div><p class="eyebrow">REVISÃO INTELIGENTE</p><h1>Hora de relembrar</h1><p class="subtitle">Estas palavras estão prontas para uma revisão.</p></div></header>
+      <section class="flashcard" id="flashcard"><p class="eyebrow">VOCABULÁRIO · <span id="card-index">1/5</span></p><button class="listen" id="listen-word">🔊</button><div class="flip-scene" id="flip-scene"><div class="flip-card"><div class="flip-face flip-front"><h2 id="word">Hello</h2><p class="flip-hint">Toque para ver a tradução</p><button class="primary" id="flip-card-btn">Virar cartão <span>↻</span></button></div><div class="flip-face flip-back"><p id="translation">Olá</p><small id="example">Hello, nice to meet you.</small><button class="primary" id="next-card">Eu sei esta palavra <span>→</span></button></div></div></div></section>
+    </section>
+
+    <section class="content hidden" id="talk-view">
+      <div class="maya-stage">
+        <div class="maya-avatar-slot maya-avatar-slot-talk" id="maya-avatar-slot-talk"></div>
+        <div class="maya-speech" id="maya-speech">
+          <p class="maya-speech-en" id="maya-speech-en">Hello! Welcome to the café. What would you like to drink?</p>
+          <p class="maya-speech-pt" id="maya-speech-pt">Olá! Bem-vindo ao café. O que você gostaria de beber?</p>
+        </div>
+        <div class="voice-tip"><span>✦</span><p><strong>Dica:</strong> <button id="voice-tip-example" data-say="I would like a coffee, please.">“I would like a coffee, please.”</button><br><small id="voice-tip-translation">Tradução: “Eu gostaria de um café, por favor.”</small></p></div>
+      </div>
+      <header><div><p class="eyebrow">CONVERSE COM A MAYA</p><h1>Vamos conversar</h1><p class="subtitle">Fale em inglês. Eu escuto, respondo e ajudo você a melhorar.</p></div></header>
+      <div class="level-selector" aria-label="Escolha o nível de conversa"><button class="level-choice active" data-level="basic">Básico</button><button class="level-choice" data-level="intermediate">Intermediário</button><button class="level-choice" data-level="advanced">Avançado</button></div>
+      <section class="voice-room">
+        <div class="voice-top"><span class="live-dot"></span><span id="voice-status">Maya pronta para conversar</span><button class="level-button" id="scenario-button">Cenário: Café ▾</button></div>
+        <div class="dialogue" id="dialogue" aria-live="polite">
+          <article class="message tutor"><span class="speaker"><img src="maya.png" alt="Maya"></span><div><small>MAYA</small><p>Hello! Welcome to the café. What would you like to drink?</p><button class="mini-listen" data-say="Hello! Welcome to the café. What would you like to drink?">🔊 Ouvir</button></div></article>
+        </div>
+        <div class="voice-controls"><button class="mic hidden" id="mic-button" aria-label="Falar com a Maya"><span>🎤</span></button><p id="mic-help">Maya está ouvindo — fale em inglês a qualquer momento.</p></div>
+      </section>
+    </section>
+
+    
+    <section class="content hidden" id="exam-view">
+      <header><div><p class="eyebrow">SIMULADOS E PROVAS · 1000 LIÇÕES · 12000 PERGUNTAS</p><h1>Teste seus conhecimentos</h1><p class="subtitle">Do iniciante à fluência, com certificado.</p></div></header>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0">
+        <article class="module-card" style="border:2px solid #276246"><span class="module-badge">MAIS POPULAR</span><h3>📝 Simulado Rápido</h3><p>24 perguntas variadas, sem repetição</p><small>18 min · Certificado rápido</small><br><br><button class="primary" onclick="startExam('quick')">Começar rápido →</button></article>
+        <article class="module-card"><h3>📚 Simulado Completo</h3><p>60 perguntas, do básico à fluência</p><small>45 min · Ideal para revisão</small><br><br><button class="primary" onclick="startExam('complete')">Começar completo →</button></article>
+        <article class="module-card"><h3>🎯 Prova de Fluência</h3><p>36 perguntas avançadas</p><small>32 min · Certificado de fluência</small><br><br><button class="primary" onclick="startExam('fluency')">Prova de fluência →</button></article>
+      </div>
+      <div id="module-exams" style="margin-top:24px"></div>
+      <div id="certificates-list" style="margin-top:24px"></div>
+      <div id="exam-history" style="margin-top:24px"></div>
+    </section>
+
+    <section class="content hidden" id="progress-view">
+      <header><div><p class="eyebrow">SEU PROGRESSO</p><h1>Você está evoluindo</h1><p class="subtitle">Cada prática conta.</p></div></header>
+      <div class="stats"><article><span>🔥</span><strong id="streak">0</strong><p>dias seguidos</p></article><article><span>✦</span><strong id="points">0</strong><p>pontos conquistados</p></article><article><span>◌</span><strong id="completed-count">0</strong><p>lições concluídas</p></article></div>
+      <section class="progress-card"><h2>Atividade da semana</h2><div class="bars"><i style="height:35%"></i><i style="height:65%"></i><i style="height:45%"></i><i class="today" style="height:88%"></i><i style="height:20%"></i><i style="height:12%"></i><i style="height:8%"></i></div><div class="week"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div></section>
+    </section>
+
+    <div class="modal hidden" id="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-title">
+      <div class="modal-box"><button class="close" id="close-modal">×</button><div id="lesson-content"></div></div>
+    </div>
+    <div class="modal hidden" id="name-modal" role="dialog" aria-modal="true" aria-labelledby="name-title">
+      <div class="modal-box name-box"><img src="maya.png" alt="Maya, sua tutora de inglês" class="maya-welcome-modal"><p class="eyebrow">SEU PERFIL</p><h2 id="name-title">Olá! Eu sou a Maya. Como podemos chamar você?</h2><p>Usaremos seu nome para personalizar as lições.</p><form id="name-form"><input id="student-name-input" type="text" maxlength="30" autocomplete="name" placeholder="Digite seu nome" required><button class="primary" type="submit">Salvar e continuar <span>→</span></button></form></div>
+    </div>
+  
+    <div class="modal hidden" id="exam-modal" role="dialog" style="z-index:10000"><div class="modal-box" style="max-width:700px;width:95%;max-height:92vh;overflow:auto"><button class="close" onclick="closeExam()">×</button><div id="exam-content"></div></div></div>
+    <div class="modal hidden" id="certificate-modal" role="dialog" style="z-index:10001"><div class="modal-box" style="max-width:800px;width:95%;text-align:center"><button class="close" onclick="document.getElementById('certificate-modal').classList.add('hidden')">×</button><h2>📜 Seu Certificado Zeuvastec</h2><img id="certificate-image" style="width:100%;border-radius:12px;margin:16px 0"/><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button id="download-certificate" class="primary">⬇️ Baixar PNG</button><button class="tab" onclick="document.getElementById('certificate-modal').classList.add('hidden')">Fechar</button></div></div></div>
+
+  </main>
+  <script src="app.js?v=7"></script>
+  <script src="interaction-fix.js"></script>
+  <script src="guided-voice.js?v=6"></script>
+  <script src="pwa.js"></script>
+  <script src="profile.js"></script>
+  <script src="audio-unlock.js"></script>
+  <script src="sound-fix.js"></script>
+  <script src="simulador-bank.js"></script>
+  <!-- removido conflito -->
+  <script src="exam.js"></script>
+  <script src="requested-fixes.js"></script>
+  <script type="module">import('./maya-3d.js?v=' + Date.now());</script>
+</body>
+</html>
