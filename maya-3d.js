@@ -87,7 +87,15 @@ export async function iniciarMaya3D() {
       lightDirectColor: 0xffffff,
       lightSpotColor: 0xffffff
     });
+    // O humor de cada estado tem uma animação "mouth" que, a cada 1–5s,
+    // sorteia lábios enrolados/esticados e "bico" de até 0,3 (mouthRoll*,
+    // mouthStretch*, mouthPucker) — por cima da fala, isso deformava a boca e
+    // mostrava dentes "às vezes" (2026-09-20). Removida de todos os humores.
+    for (const humor of Object.values(head.animMoods || {})) {
+      if (humor && Array.isArray(humor.anims)) humor.anims = humor.anims.filter((a) => a.name !== 'mouth');
+    }
     await head.showAvatar({ url: 'avatars/maya.glb', body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
+    head.animQueue = head.animQueue.filter((x) => x.template?.name !== 'mouth');
     head.setView('upper', { cameraDistance: -1, cameraX: 0, cameraY: 0.02, cameraRotateX: 0, cameraRotateY: 0 });
     // O TalkingHead limita a velocidade padrão de qualquer morph target para
     // um movimento suave de expressões (bom para sobrancelhas, ruim para
@@ -95,8 +103,20 @@ export async function iniciarMaya3D() {
     // aparecer entre uma troca de visema e outra. Acelera todos os visemas
     // de fala (2026-09-17, ampliado pra todos os 15 visemas em 2026-09-19).
     for (const nome of Object.keys(INTENSIDADE_VISEMA)) {
-      if (head.mtAvatar[nome]) { head.mtAvatar[nome].acc = 0.002; head.mtAvatar[nome].maxv = 0.08; }
+      // A suavização da biblioteca ULTRAPASSA o alvo quando a velocidade acumulada
+      // é alta e o alvo muda de sentido (abrir -> fechar): a boca chegava perto
+      // de 1,0 por um frame ("abre exageradamente às vezes", 2026-09-20). Como
+      // o suavizador próprio abaixo já cuida da dinâmica, a biblioteca só
+      // precisa chegar rápido ao valor pedido — e a velocidade dela é zerada
+      // a cada passo (ver tickDaBoca).
+      if (head.mtAvatar[nome]) { head.mtAvatar[nome].acc = 0.05; head.mtAvatar[nome].maxv = 0.5; }
     }
+    // A biblioteca sorteia "microexpressões" aleatórias em vários morph
+    // targets da BOCA (cantos, lábios enrolados/esticados, bochechas), de até
+    // ~0,2 cada, o tempo todo — somadas à fala, deformavam a boca e mostravam
+    // dentes ("abrindo exageradamente às vezes", 2026-09-20). Deixamos só as
+    // sobrancelhas variando, que dão vida ao rosto sem mexer na boca.
+    head.mtRandomized = ['browDownLeft', 'browDownRight', 'browOuterUpLeft', 'browOuterUpRight'];
     window.__mayaHeadDebug = head; // ajuda a depurar pelo console; inofensivo em produção
     try { ativarCorpoVida(head); } catch (e) { console.warn('[Maya 3D] corpo-vida falhou:', e); }
     try { ativarCorpoCongelado(head); } catch (e) { console.warn('[Maya 3D] corpo-congelado falhou:', e); }
@@ -225,6 +245,8 @@ function tickDaBoca() {
   let algum = false;
   for (const nome of VISEMAS_ALEATORIOS) {
     const v = (valorVisema[nome] || 0) * escala;
+    const morph = head.mtAvatar[nome];
+    if (morph) morph.v = 0; // sem velocidade acumulada = sem ultrapassar o alvo
     if (v > 0) {
       head.setFixedValue(nome, v);
       aplicadoVisema[nome] = true;
