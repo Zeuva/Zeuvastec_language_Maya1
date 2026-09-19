@@ -270,3 +270,30 @@
   display:block;
   margin:0 auto 14px;
 }
+
+/* O microfone (e o texto "sua vez") agora fica logo abaixo da fala da Maya,
+   no topo de "Conversar" — antes ficava no rodapé da tela e, no iPhone, longe
+   da Maya (2026-09-19). Sobrescreve a barra fixa do rodapé do fix.css. */
+.maya-stage .voice-controls{
+  position:static;
+  width:100%;
+  max-width:520px;
+  margin-top:10px;
+  padding:6px 0 2px;
+  background:transparent;
+  border:0;
+  backdrop-filter:none;
+  gap:8px;
+}
+.maya-stage .mic{
+  width:72px !important;
+  height:72px !important;
+  min-width:72px !important;
+  min-height:72px !important;
+  font-size:28px !important;
+}
+.maya-stage #mic-help{
+  font-size:13px !important;
+  max-width:340px !important;
+  margin:0;
+}
