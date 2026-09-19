@@ -102,7 +102,7 @@ export async function iniciarMaya3D() {
     // falar) — sem isso, a boca demora tanto pra abrir que nunca chega a
     // aparecer entre uma troca de visema e outra. Acelera todos os visemas
     // de fala (2026-09-17, ampliado pra todos os 15 visemas em 2026-09-19).
-    for (const nome of Object.keys(INTENSIDADE_VISEMA)) {
+    for (const nome of Object.keys(INTENSIDADE_VISEMA).concat(MORPHS_COMPLEMENTO)) {
       // A suavização da biblioteca ULTRAPASSA o alvo quando a velocidade acumulada
       // é alta e o alvo muda de sentido (abrir -> fechar): a boca chegava perto
       // de 1,0 por um frame ("abre exageradamente às vezes", 2026-09-20). Como
@@ -210,6 +210,7 @@ const INTENSIDADE_VISEMA = {
 // suavizador abaixo (controle próprio da boca) a soma nunca passa disso.
 const LIMITE_SOMA_VISEMAS = 0.24;
 const VISEMAS_ALEATORIOS = Object.keys(INTENSIDADE_VISEMA); // só como rede de segurança
+let TODOS_MORPHS_BOCA = VISEMAS_ALEATORIOS; // + complementos (definido logo abaixo do bloco COMPLEMENTOS_VISEMA)
 const MS_POR_UNIDADE_BASE = 108; // ms por unidade relativa da biblioteca, em velocidade 1.0
 
 let visemaAtual = null;
@@ -223,9 +224,36 @@ let falandoId = null;
 // boca e ela ficava presa aberta (2026-09-18).
 let falando = false;
 
+// Movimentos COMPLEMENTARES por visema (2026-09-19: "o lábio superior está
+// congelado, não se mexe, a fala não fica natural"). Os visemas do GLB mexem
+// principalmente no lábio inferior/mandíbula; na fala real o lábio superior
+// sobe nas vogais abertas e em f/v, os lábios se fecham/enrolam em p/b/m e
+// se projetam em o/u. Cada valor é o peso NO PICO do visema (proporcional à
+// intensidade dele em cada instante) e são todos pequenos de propósito — o
+// usuário já reclamou de boca/dentes exagerados.
+const COMPLEMENTOS_VISEMA = {
+  viseme_aa: { jawOpen: 0.06, mouthUpperUpLeft: 0.06, mouthUpperUpRight: 0.06, mouthLowerDownLeft: 0.05, mouthLowerDownRight: 0.05 },
+  viseme_E:  { jawOpen: 0.03, mouthUpperUpLeft: 0.05, mouthUpperUpRight: 0.05, mouthSmileLeft: 0.05, mouthSmileRight: 0.05 },
+  viseme_I:  { jawOpen: 0.015, mouthUpperUpLeft: 0.04, mouthUpperUpRight: 0.04, mouthSmileLeft: 0.06, mouthSmileRight: 0.06 },
+  viseme_O:  { jawOpen: 0.04, mouthFunnel: 0.14, mouthUpperUpLeft: 0.05, mouthUpperUpRight: 0.05 },
+  viseme_U:  { jawOpen: 0.015, mouthPucker: 0.14, mouthFunnel: 0.07 },
+  viseme_PP: { mouthClose: 0.1, mouthPressLeft: 0.08, mouthPressRight: 0.08, mouthRollUpper: 0.06 },
+  viseme_FF: { mouthRollLower: 0.08, mouthUpperUpLeft: 0.06, mouthUpperUpRight: 0.06, mouthShrugUpper: 0.04 },
+  viseme_TH: { mouthUpperUpLeft: 0.04, mouthUpperUpRight: 0.04 },
+  viseme_DD: { jawOpen: 0.02, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 },
+  viseme_kk: { jawOpen: 0.02, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 },
+  viseme_SS: { mouthSmileLeft: 0.04, mouthSmileRight: 0.04, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 },
+  viseme_nn: { jawOpen: 0.02, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 },
+  viseme_RR: { mouthFunnel: 0.06, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 },
+  viseme_CH: { mouthFunnel: 0.06, mouthUpperUpLeft: 0.03, mouthUpperUpRight: 0.03 }
+};
+const MORPHS_COMPLEMENTO = Array.from(new Set(Object.values(COMPLEMENTOS_VISEMA).flatMap((o) => Object.keys(o))));
+const TETO_COMPLEMENTO = 0.16; // nenhum morph complementar passa disso
+TODOS_MORPHS_BOCA = VISEMAS_ALEATORIOS.concat(MORPHS_COMPLEMENTO);
+
 // Suavizador próprio da boca: cada visema tem um ALVO (definido pela linha do
 // tempo) e um valor ATUAL que se aproxima dele com uma constante de tempo
-// (sobe em ~45ms, desce em ~75ms). A cada ~33ms o valor é aplicado no avatar
+// (sobe em ~40ms, desce em ~70ms). A cada ~33ms o valor é aplicado no avatar
 // (setFixedValue), já com a soma limitada. Assim as formas de boca se
 // misturam de forma contínua em vez de "estalar" entre um som e outro.
 const alvoVisema = {};
@@ -243,19 +271,30 @@ function tickDaBoca() {
   for (const nome of VISEMAS_ALEATORIOS) {
     const a = valorVisema[nome] || 0;
     const t = alvoVisema[nome] || 0;
-    const tau = t > a ? 45 : 75;
+    const tau = t > a ? 40 : 70;
     let n = a + (t - a) * (1 - Math.exp(-dt / tau));
     if (t === 0 && n < 0.004) n = 0;
     valorVisema[nome] = n;
     soma += n;
   }
   const escala = soma > LIMITE_SOMA_VISEMAS ? LIMITE_SOMA_VISEMAS / soma : 1;
-  let algum = false;
+  const saida = {};
   for (const nome of VISEMAS_ALEATORIOS) {
     const v = (valorVisema[nome] || 0) * escala;
+    saida[nome] = v;
+    const comp = COMPLEMENTOS_VISEMA[nome];
+    if (comp && v > 0) {
+      const fracao = v / INTENSIDADE_VISEMA[nome];
+      for (const [morph, peso] of Object.entries(comp)) saida[morph] = Math.min(TETO_COMPLEMENTO, (saida[morph] || 0) + peso * fracao);
+    }
+  }
+  let algum = false;
+  for (const nome of TODOS_MORPHS_BOCA) {
+    const v = saida[nome] || 0;
     const morph = head.mtAvatar[nome];
-    if (morph) morph.v = 0; // sem velocidade acumulada = sem ultrapassar o alvo
-    if (v > 0) {
+    if (!morph) continue;
+    morph.v = 0; // sem velocidade acumulada = sem ultrapassar o alvo
+    if (v > 0.002) {
       head.setFixedValue(nome, v);
       aplicadoVisema[nome] = true;
       algum = true;
@@ -328,8 +367,14 @@ function tocarPalavra(i) {
       }
     });
   }
-  // boca fecha no fim da palavra (pequeno fechamento natural entre palavras)
-  timersPalavra.push(window.setTimeout(() => definirVisema(null, 0), dur + 25));
+  // No fim da palavra: se há pausa (vírgula/ponto) a boca fecha; se a fala
+  // continua direto pra próxima palavra, ela só relaxa (~35% do último som),
+  // como na fala real — fechar totalmente entre TODAS as palavras deixava o
+  // movimento mecânico.
+  timersPalavra.push(window.setTimeout(() => {
+    if (p.pausa > 0 || !p.seq || !visemaAtual) { definirVisema(null, 0); return; }
+    definirVisema(visemaAtual, INTENSIDADE_VISEMA[visemaAtual] * 0.35);
+  }, dur + 25));
   // Relógio próprio: segue sozinho pra próxima palavra; se o navegador manda
   // "boundary", ele ressincroniza antes disso (aqui vira só uma vigia).
   const espera = (dur + p.pausa) * (plano.viuBoundary ? 1.4 : 1);

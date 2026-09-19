@@ -590,6 +590,13 @@ window.mayaVolume=(function(){ const v=parseFloat(localStorage.getItem(CHAVE_VOL
   }
 
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // O botão do microfone é escondido no computador (a escuta liga sozinha),
+  // mas no iPhone/iPad o Safari só deixa o reconhecimento de voz começar
+  // com um TOQUE do aluno — com o botão escondido a Maya falava e nunca
+  // ouvia (2026-09-19). Nesses aparelhos, e em navegadores sem
+  // reconhecimento de voz, o botão fica sempre visível.
+  const aparelhoApple = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!Recognition || aparelhoApple) mic.classList.remove('hidden');
   if (!Recognition) {
     mic.onclick = () => {
       if (aiChatActive) {
@@ -638,6 +645,8 @@ window.mayaVolume=(function(){ const v=parseFloat(localStorage.getItem(CHAVE_VOL
   guidedRecognition.onerror = (event) => {
     isListening = false;
     mic.classList.remove('listening');
+    mic.classList.remove('hidden'); // deixa o aluno tocar pra tentar de novo
+    mic.classList.add('pulse');
     status.textContent = 'Não consegui ouvir';
     if (isIOS) {
       help.textContent = `O reconhecimento de voz do iPhone/iPad é instável (erro: ${event.error || 'desconhecido'}). Verifique Ajustes > Safari > Microfone, ou toque no microfone para tentar de novo.`;
@@ -685,13 +694,12 @@ window.mayaVolume=(function(){ const v=parseFloat(localStorage.getItem(CHAVE_VOL
     // o reconhecimento. O primeiro toque arma a sessão; depois disso,
     // cada nova pergunta tenta iniciar o microfone automaticamente.
     if (isIOS) {
-      if (!autoListenArmed) {
-        mic.classList.add('pulse');
-        help.textContent = 'Toque no microfone uma vez para ativar a conversa automática.';
-        return;
-      }
-      mic.classList.remove('pulse');
-      window.setTimeout(startListening, delay);
+      // Sempre mostra o microfone pulsando: se o Safari não deixar iniciar
+      // sozinho, o aluno já sabe que é a vez dele e toca.
+      mic.classList.remove('hidden');
+      mic.classList.add('pulse');
+      help.textContent = 'Sua vez! Toque no microfone 🎤 e responda em inglês.';
+      if (autoListenArmed) window.setTimeout(startListening, delay);
       return;
     }
     if (microphoneStream) window.setTimeout(startListening, delay);
