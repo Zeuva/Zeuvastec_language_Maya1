@@ -7,6 +7,9 @@
       "namespace": "android_app",
       "package_name": "com.zeuvastec.language",
       "sha256_cert_fingerprints": [
+        "3B:0D:41:F9:B6:96:23:AF:70:26:CB:A2:22:06:46:B0:12:96:3E:FA:2D:A9:4F:1A:8A:E6:B5:4A:BE:DC:DD:A0",
+        "A6:62:79:63:0C:BA:60:7F:37:96:5E:3B:C6:03:B2:0C:BB:C7:21:2E:46:15:D5:04:9B:94:63:9C:30:88:E9:E8",
+        "19:0D:54:96:E5:44:EB:16:F7:0C:DD:C7:66:D8:97:52:6B:B9:0A:92:C1:F7:AA:3B:2B:67:A6:35:4E:93:56:30",
         "84:E9:3B:D6:42:B8:74:C1:56:8F:F6:C0:A0:71:06:67:B7:32:ED:D0:3F:0E:E1:02:32:96:D9:A7:48:CC:B2:C1",
         "57:71:C1:48:B9:94:06:15:0A:CA:59:59:9E:F0:EE:D2:F0:C7:E7:66:C1:4F:5D:94:91:59:F2:FE:4B:EF:FF:E4"
       ]
