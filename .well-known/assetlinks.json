@@ -1,8 +1,27 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "app.vercel.zeuvastec_language_corrigido_11.twa",
-        "sha256_cert_fingerprints": ["84:E9:3B:D6:42:B8:74:C1:56:8F:F6:C0:A0:71:06:67:B7:32:ED:D0:3F:0E:E1:02:32:96:D9:A7:48:CC:B2:C1"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zeuvastec.language",
+      "sha256_cert_fingerprints": [
+        "84:E9:3B:D6:42:B8:74:C1:56:8F:F6:C0:A0:71:06:67:B7:32:ED:D0:3F:0E:E1:02:32:96:D9:A7:48:CC:B2:C1",
+        "57:71:C1:48:B9:94:06:15:0A:CA:59:59:9E:F0:EE:D2:F0:C7:E7:66:C1:4F:5D:94:91:59:F2:FE:4B:EF:FF:E4"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.zeuvastec_language_corrigido_11.twa",
+      "sha256_cert_fingerprints": [
+        "84:E9:3B:D6:42:B8:74:C1:56:8F:F6:C0:A0:71:06:67:B7:32:ED:D0:3F:0E:E1:02:32:96:D9:A7:48:CC:B2:C1"
+      ]
+    }
+  }
+]
